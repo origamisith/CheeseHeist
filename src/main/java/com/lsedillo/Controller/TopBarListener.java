@@ -22,10 +22,10 @@ public class TopBarListener implements ActionListener {
         }
         else if(source.equals(parent.stop)) {
             Game.stop();
-
         }
         else if(source.equals(parent.step)) {
             Game.step();
+            parent.rootFrame.mazePanel.listener.targetedRepaint();
         }
         else {
             Game.reset();

@@ -26,12 +26,13 @@ public abstract class Entity implements Movable{
     @Override
     public void move() {
         switch(direction) {
-            case EAST -> setLoc(new GridLocation(getLoc().getX() + 1, getLoc().getY()));
-            case WEST-> setLoc(new GridLocation(getLoc().getX() - 1, getLoc().getY()));
-            case NORTH-> setLoc(new GridLocation(getLoc().getX(), getLoc().getY() - 1));
-            case SOUTH-> setLoc(new GridLocation(getLoc().getX(), getLoc().getY()+1));
+            case EAST -> setLoc(loc.transpose(1,0));
+            case WEST-> setLoc(loc.transpose(-1,0));
+            case NORTH-> setLoc(loc.transpose(0,-1));
+            case SOUTH-> setLoc(loc.transpose(0, 1));
         }
     }
+
 
     public Compass getDirection() {
         return direction;

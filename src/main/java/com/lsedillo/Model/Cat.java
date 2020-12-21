@@ -1,7 +1,9 @@
 package com.lsedillo.Model;
 
 import javax.swing.*;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Cat extends Entity{
@@ -11,7 +13,10 @@ public class Cat extends Entity{
 
     public boolean sniffForMouse() {
         boolean isMouse = Game.mouse.getLoc().equals(getLoc());
-        if(isMouse) Game.mouse.respawn();
+        if(isMouse) {
+            Game.mouse.respawn();
+            Game.cats[4].respawn();
+        }
         return isMouse;
     }
 
@@ -19,9 +24,10 @@ public class Cat extends Entity{
         boolean areCheeses;
         Stream<Cheese> cheeseStream = Arrays.stream(Game.cheeses)
                 .filter(c -> c.getLoc().equals(getLoc()));
-        areCheeses = cheeseStream.count() > 0;
+        ArrayList<Cheese> list= (ArrayList<Cheese>)(cheeseStream.collect(Collectors.toList()));
+        areCheeses = list.size() > 0;
         if(areCheeses) {
-            cheeseStream.forEach((c)->c.setVisible(false));
+            list.forEach((c)->c.setVisible(false));
         }
         return areCheeses;
 

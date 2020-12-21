@@ -5,9 +5,10 @@ import javax.swing.*;
 public class Cheese extends Entity{
     public boolean visible, eaten;
 
+    public static ImageIcon imageIcon = new ImageIcon("src/main/resources/cheese.png");
     public Cheese(GridLocation loc) {
         super(loc);
-
+        visible = true;
     }
 
     public boolean isVisible() {
@@ -27,11 +28,11 @@ public class Cheese extends Entity{
     }
 
     public String toString(){
-        return "Cheese at " + getLoc().toString();
+        return "Cheese at " + getLoc().toString() + " is " + visible + " visible ";
     }
 
     @Override
     public ImageIcon getImageIcon() {
-        return new ImageIcon("src/main/resources/cheese.png");
+        return imageIcon;
     }
 }

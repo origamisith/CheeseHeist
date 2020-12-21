@@ -8,8 +8,14 @@ public class HorizontalCat extends Cat{
         return "Horizontal Cat at " + getLoc();
     }
 
-    @Override
-    public Compass getDirection() {
-        return Compass.WEST;
+
+    public void move() {
+       MazeCell m = Game.maze.getForwardCell(this);
+
+       if(m.getCellType() != MazeCell.PATH) {
+           setDirection(getDirection().turnDegrees(180));
+       }
+       else super.move();
     }
+
 }

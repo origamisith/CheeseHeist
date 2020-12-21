@@ -1,6 +1,7 @@
 package com.lsedillo.Model;
 
 import com.lsedillo.Controller.CheeseHeist;
+import com.lsedillo.View.MazePanel;
 import com.lsedillo.View.TopBar;
 
 import java.awt.*;
@@ -12,9 +13,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 
@@ -23,27 +26,63 @@ public class Game {
     public static Mouse mouse;
     public static Cat[] cats;
     public static Cheese[] cheeses;
-    public static boolean keyPressed;
-//    private static File mazeFile;
-    private static Path mazePath;
+    public static boolean keyPressed = false;
+    public static boolean isPaused = true;
+    public static final int FPS_MIN = 0;
+    public static final int FPS_MAX = 30;
+    public static int fps = 3;
 
     private static long nanosStart;
-    private static long nanosElapsed;
-//    private static TopBar topBar = CheeseHeist.rootFrame.topBar;
+    private static long savedNanos = 0;
+    private static Path mazePath;
+//    private static MazePanel mazePanel = CheeseHeist.rootFrame.mazePanel;
+
 
     public static void step() {
+        Arrays.stream(cheeses).forEach(c -> c.setVisible(true));
+        Arrays.stream(cats).forEach(cat -> {
+            cat.move();
+            cat.sniffForMouse();
+            cat.sniffForCheese();
+        });
+//        int n = (new Random()).nextInt(2);
+//        IntStream.range(0,n).forEach(num->cats[4].move());
+        mouse.sniffForCheese();
+        if(keyPressed) mouse.move();
         CheeseHeist.rootFrame.topBar.updateStats();
+        keyPressed = false;
+        if(isPaused) savedNanos+= 1_000_000_000/fps;
     }
     public static void start() {
+        if(!isPaused) return;
+        isPaused = false;
+       nanosStart = System.nanoTime();
 
+       CheeseHeist.rootFrame.mazePanel.timer.start();
     }
     public static void stop() {
+        CheeseHeist.rootFrame.mazePanel.timer.stop();
+        savedNanos = getNanosElapsed();
+        isPaused = true;
     }
     public static void reset() {
+        CheeseHeist.reset();
+        stop();
+        savedNanos = 0;
+        isPaused = true;
+    }
 
+    public static void lose() {
+        stop();
+        CheeseHeist.rootFrame.mazePanel.lose();
+    }
+
+    public static void win() {
+        stop();
+        System.out.println("heyyyyy");
+        CheeseHeist.rootFrame.mazePanel.win();
     }
     public static void parseFile(Path input) {
-        Scanner mazeScanner;
         mazePath = input;
         try {
             maze = new Maze(mazePath);
@@ -86,20 +125,23 @@ public class Game {
         } catch(IOException e) {
             System.err.println("IOException");
         }
-
-        nanosStart = System.nanoTime();
     }
 
     public static long getNanosElapsed() {
-        nanosElapsed = System.nanoTime() - nanosStart;
+        long nanosElapsed = savedNanos;
+        if(!isPaused) nanosElapsed += System.nanoTime()-nanosStart;
         return nanosElapsed;
     }
 
     public static String getTimeElapsed() {
-        nanosElapsed = getNanosElapsed();
+        long nanosElapsed = getNanosElapsed();
         long seconds = nanosElapsed / (1_000_000_000) % 60;
         long minutes = nanosElapsed / (1_000_000_000) / 60;
         return String.format("%02d:%02d", minutes, seconds);
     }
 
+    public static void setFps(int fps) {
+        Game.fps = fps;
+        CheeseHeist.rootFrame.mazePanel.timer.setDelay(1000/fps);
+    }
 }

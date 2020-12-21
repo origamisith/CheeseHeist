@@ -11,7 +11,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 
 public class TopBar extends JPanel {
-    JFrame rootFrame;
+    public RootFrame rootFrame;
     public JLabel timeElapsed;
     public JLabel livesLeft;
     public JLabel cheeseEaten;
@@ -19,12 +19,13 @@ public class TopBar extends JPanel {
     ActionListener listener;
 
 
-    public TopBar(JFrame rootFrame) {
+    public TopBar(RootFrame rootFrame) {
         super();
         this.listener = new TopBarListener(this);
         this.rootFrame = rootFrame;
         setLayout(new GridLayout(1,3));
         timeElapsed = new JLabel("Time " + Game.getTimeElapsed());
+        timeElapsed.setFont(new Font(Font.DIALOG, Font.BOLD, 20));
         JPanel timePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         timePanel.add(timeElapsed);
 
@@ -34,10 +35,14 @@ public class TopBar extends JPanel {
         reset= new JButton("Reset");
 
         cheeseEaten = new JLabel(Game.mouse.getCheesesEaten() + "");
+        cheeseEaten.setFont(new Font(Font.DIALOG, Font.PLAIN, 15));
         livesLeft = new JLabel(Game.mouse.getLivesLeft() + "");
+        livesLeft.setFont(new Font(Font.DIALOG, Font.PLAIN, 15));
         JPanel infoPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         infoPanel.add(new JLabel(Game.mouse.getImageIcon()));
         infoPanel.add(livesLeft);
+        //Not my proudest line of code
+        infoPanel.add((new JPanel()).add(new JLabel("                    ")));
         infoPanel.add(new JLabel(Game.cheeses[0].getImageIcon()));
         infoPanel.add(cheeseEaten);
 
